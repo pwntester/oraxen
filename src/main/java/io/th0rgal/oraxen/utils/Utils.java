@@ -1,9 +1,9 @@
 package io.th0rgal.oraxen.utils;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
+import io.th0rgal.oraxen.OraxenPlugin;
 import io.th0rgal.oraxen.font.GlyphTag;
 import io.th0rgal.oraxen.font.ShiftTag;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -95,7 +95,7 @@ public class Utils {
     }
 
     public static void sendAnimation(Player player, EquipmentSlot hand) {
-        final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+        final ProtocolManager protocolManager = OraxenPlugin.get().getProtocolManager();
         final PacketContainer animation = protocolManager.createPacket(PacketType.Play.Server.ANIMATION);
         animation.getIntegers().write(0, player.getEntityId());
         animation.getIntegers().write(1, (hand == EquipmentSlot.HAND) ? 0 : 3);

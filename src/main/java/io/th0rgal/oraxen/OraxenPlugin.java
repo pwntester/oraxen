@@ -1,5 +1,7 @@
 package io.th0rgal.oraxen;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIConfig;
 import io.th0rgal.oraxen.commands.CommandsManager;
@@ -8,6 +10,8 @@ import io.th0rgal.oraxen.config.ConfigsManager;
 import io.th0rgal.oraxen.config.Message;
 import io.th0rgal.oraxen.config.Settings;
 import io.th0rgal.oraxen.font.FontManager;
+import io.th0rgal.oraxen.font.packets.InventoryPacketListener;
+import io.th0rgal.oraxen.font.packets.TitlePacketListener;
 import io.th0rgal.oraxen.hud.HudManager;
 import io.th0rgal.oraxen.items.ItemUpdater;
 import io.th0rgal.oraxen.items.OraxenItems;
@@ -43,6 +47,7 @@ public class OraxenPlugin extends JavaPlugin {
     private InvManager invManager;
     private ResourcePack resourcePack;
     private ClickActionManager clickActionManager;
+    private ProtocolManager protocolManager;
 
     public OraxenPlugin() throws NoSuchFieldException, IllegalAccessException {
         oraxen = this;
@@ -90,8 +95,14 @@ public class OraxenPlugin extends JavaPlugin {
         postLoading(configsManager);
         try {
             Message.PLUGIN_LOADED.log(Utils.tagResolver("os", OS.getOs().getPlatformName()));
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         CompatibilitiesManager.enableNativeCompatibilities();
+        if (CompatibilitiesManager.isCompatibilityEnabled("PlaceholderAPI")) {
+            protocolManager = ProtocolLibrary.getProtocolManager();
+            protocolManager.addPacketListener(new InventoryPacketListener());
+            protocolManager.addPacketListener(new TitlePacketListener());
+        }
     }
 
     private void postLoading(final ConfigsManager configsManager) {
@@ -113,6 +124,10 @@ public class OraxenPlugin extends JavaPlugin {
         hudManager.unregisterEvents();
         MechanicsManager.unloadListeners();
         HandlerList.unregisterAll(this);
+    }
+
+    public ProtocolManager getProtocolManager() {
+        return protocolManager;
     }
 
     public BukkitAudiences getAudience() {
@@ -145,7 +160,9 @@ public class OraxenPlugin extends JavaPlugin {
         fontManager.registerEvents();
     }
 
-    public HudManager getHudManager() { return hudManager; }
+    public HudManager getHudManager() {
+        return hudManager;
+    }
 
     public void setHudManager(final HudManager hudManager) {
         this.hudManager.unregisterEvents();
