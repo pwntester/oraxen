@@ -3,6 +3,8 @@ package io.th0rgal.oraxen.font;
 import io.th0rgal.oraxen.OraxenPlugin;
 import io.th0rgal.oraxen.compatibilities.provided.placeholderapi.PapiAliases;
 import io.th0rgal.oraxen.config.Message;
+import io.th0rgal.oraxen.config.Settings;
+import io.th0rgal.oraxen.items.OraxenItems;
 import io.th0rgal.oraxen.utils.Utils;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -140,7 +142,7 @@ public class FontEvents implements Listener {
                 ItemStack current = event.getCurrentItem();
 
                 // Adding item to first slot
-                if (cursor != null && cursor.getType() != Material.AIR) {
+                if (cursor != null && cursor.getType() != Material.AIR && OraxenItems.exists(cursor)) {
                     ItemMeta meta = cursor.getItemMeta();
                     if (meta == null || !meta.hasDisplayName()) return;
                     String name = meta.getDisplayName();
@@ -149,7 +151,7 @@ public class FontEvents implements Listener {
                     cursor.setItemMeta(meta);
                 }
                 // Taking item from first slot
-                else if (current != null && current.getType() != Material.AIR) {
+                else if (current != null && current.getType() != Material.AIR && OraxenItems.exists(current)) {
                     ItemMeta meta = current.getItemMeta();
                     if (meta == null || !meta.hasDisplayName()) return;
                     String name = meta.getDisplayName();
@@ -163,6 +165,8 @@ public class FontEvents implements Listener {
                 ItemStack clickedItem = clickedInv.getItem(2);
                 if (clickedItem == null) return;
                 if (displayName == null || displayName.isBlank()) return;
+                if (!OraxenItems.exists(clickedItem)) return;
+
                 for (Character character : manager.getReverseMap().keySet()) {
                     if (!displayName.contains(String.valueOf(character))) continue;
                     Glyph glyph = manager.getGlyphFromName(manager.getReverseMap().get(character));
@@ -186,8 +190,10 @@ public class FontEvents implements Listener {
 
                 ItemMeta meta = clickedItem.getItemMeta();
                 if (meta == null) return;
-                displayName = Utils.MINI_MESSAGE.serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(displayName)).replace("\\<", "<");
-                displayName = Utils.LEGACY_COMPONENT_SERIALIZER.serialize(Utils.MINI_MESSAGE.deserialize(displayName));
+                if (Settings.FORMAT_ANVIL.toBool()) {
+                    displayName = Utils.MINI_MESSAGE.serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(displayName)).replace("\\<", "<");
+                    displayName = Utils.LEGACY_COMPONENT_SERIALIZER.serialize(Utils.MINI_MESSAGE.deserialize(displayName));
+                }
                 meta.setDisplayName(displayName);
                 clickedItem.setItemMeta(meta);
             }

@@ -15,6 +15,7 @@ public enum Settings {
     FORMAT_TITLES("Plugin.formatting.titles"),
     FORMAT_SUBTITLES("Plugin.formatting.subtitles"),
     FORMAT_ACTION_BAR("Plugin.formatting.action_bar"),
+    FORMAT_ANVIL("Plugin.formatting.anvil"),
 
 
     CONFIGS_VERSION("configs_version"),
